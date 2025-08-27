@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive HTML, CSS, and JavaScript</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #d4fc79, #96e3e6);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: #2e7d74;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 1px;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 30px auto;
+      animation: slideUp 1.2s ease-in-out;
+    }
+
+    form {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      transition: transform 0.3s ease;
+    }
+
+    form:hover {
+      transform: scale(1.02);
+    }
+
+    form h2 {
+      margin-bottom: 15px;
+      color: #2e7d6e;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #43a08c;
+      box-shadow: 0 0 8px rgba(67,160,71,0.6);
+      outline: none;
+    }
+
+    button {
+      background: #43a08f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #1b5e20;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      background: #e8f5e9;
+    }
+
+    @media (max-width: 768px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .todo {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .todo h2 {
+      margin-bottom: 10px;
+      color: #2e7d32;
+    }
+
+    .todo ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .todo li {
+      display: flex;
+      justify-content: space-between;
+      background: #f1f8e9;
+      margin: 6px 0;
+      padding: 10px 14px;
+      border-radius: 8px;
+      align-items: center;
+      animation: slideIn 0.4s ease;
+    }
+
+    .remove-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .remove-btn:hover {
+      background: #b71c1c;
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    🌿 Interactive HTML, CSS, and JavaScript
+  </header>
+
+  <div class="container">
+
+    <form id="contactForm">
+      <h2>Contact Form</h2>
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+
+      <label for="message">Message</label>
+      <textarea id="message" placeholder="Enter your message" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div class="grid-layout">
+      <div class="box">📌 Navigation</div>
+      <div class="box">📖 Content Area</div>
+      <div class="box">📂 Sidebar</div>
+    </div>
+
+    <div class="todo">
+      <h2>✅ To-Do List</h2>
+      <input type="text" id="taskInput" placeholder="Enter a task">
+      <button onclick="addTask()">Add Task</button>
+      <ul id="taskList"></ul>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      let name = document.getElementById("name").value.trim();
+      let email = document.getElementById("email").value.trim();
+      let message = document.getElementById("message").value.trim();
+      let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+
+      if (name === "" || email === "" || message === "") {
+        alert("⚠️ All fields are required!");
+        return;
+      }
+      if (!email.match(emailPattern)) {
+        alert("❌ Please enter a valid email address!");
+        return;
+      }
+      alert("✅ Form submitted successfully!");
+      this.reset();
+    });
+
+    function addTask() {
+      let taskInput = document.getElementById("taskInput");
+      let taskValue = taskInput.value.trim();
+      if (taskValue === "") {
+        alert("⚠️ Please enter a task!");
+        return;
+      }
+
+      let li = document.createElement("li");
+      li.innerHTML = `${taskValue} <button class="remove-btn" onclick="removeTask(this)">Remove</button>`;
+      document.getElementById("taskList").appendChild(li);
+
+      li.style.animation = "slideIn 0.5s ease";
+      taskInput.value = "";
+    }
+
+    function removeTask(button) {
+      let li = button.parentElement;
+      li.style.animation = "fadeIn 0.5s reverse";
+      setTimeout(() => li.remove(), 400);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Product Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Controls Section */
+        .controls {
+            background: white;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            align-items: end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .search-input {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        select {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .price-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Filter Tags */
+        .active-filters {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag .remove-filter {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Results Info */
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+
+        .results-count {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .products-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .product-image {
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-badge.best-seller {
+            background: #28a745;
+        }
+
+        .product-badge.new {
+            background: #17a2b8;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 1.1rem;
+        }
+
+        .rating-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .discount {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* List View Styles */
+        .product-card.list-view {
+            display: flex;
+            align-items: center;
+        }
+
+        .product-card.list-view .product-image {
+            width: 200px;
+            height: 150px;
+            flex-shrink: 0;
+        }
+
+        .product-card.list-view .product-info {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .product-card.list-view .product-actions {
+            flex-direction: column;
+            min-width: 150px;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .no-results h3 {
+            font-size: 2rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .no-results p {
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                padding: 1.5rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .product-card.list-view {
+                flex-direction: column;
+            }
+
+            .product-card.list-view .product-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .product-card.list-view .product-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .results-info {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>TechStore</h1>
+            <p>Discover the latest in technology and electronics</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="searchInput">Search Products</label>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by name, category, or brand...">
+                </div>
+                
+                <div class="control-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="smartphones">Smartphones</option>
+                        <option value="laptops">Laptops</option>
+                        <option value="headphones">Headphones</option>
+                        <option value="tablets">Tablets</option>
+                        <option value="smartwatch">Smart Watches</option>
+                        <option value="accessories">Accessories</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="sortBy">Sort By</label>
+                    <select id="sortBy">
+                        <option value="name">Name (A-Z)</option>
+                        <option value="name-desc">Name (Z-A)</option>
+                        <option value="price-low">Price (Low to High)</option>
+                        <option value="price-high">Price (High to Low)</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Price Range</label>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" class="price-input" placeholder="Min" min="0">
+                        <span>-</span>
+                        <input type="number" id="maxPrice" class="price-input" placeholder="Max" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="active-filters" id="activeFilters"></div>
+        </div>
+
+        <div class="results-info">
+            <div class="results-count" id="resultsCount">Showing 0 products</div>
+            <div class="view-toggle">
+                <button class="view-btn active" id="gridViewBtn" data-view="grid">🔳 Grid</button>
+                <button class="view-btn" id="listViewBtn" data-view="list">📋 List</button>
+            </div>
+        </div>
+
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <script>
+        class ProductCatalog {
+            constructor() {
+                this.products = [];
+                this.filteredProducts = [];
+                this.currentView = 'grid';
+                this.filters = {
+                    search: '',
+                    category: '',
+                    minPrice: null,
+                    maxPrice: null,
+                    sortBy: 'name'
+                };
+                this.init();
+            }
+
+            init() {
+                this.loadProducts();
+                this.bindEvents();
+                this.applyFilters();
+            }
+
+            loadProducts() {
+                // Sample product data
+                this.products = [
+                    {
+                        id: 1,
+                        name: "iPhone 15 Pro Max",
+                        category: "smartphones",
+                        brand: "Apple",
+                        price: 1199,
+                        originalPrice: 1299,
+                        rating: 4.8,
+                        reviews: 1250,
+                        description: "The most advanced iPhone yet with titanium design and A17 Pro chip.",
+                        badge: "new",
+                        emoji: "📱",
+                        createdAt: new Date('2024-01-15')
+                    },
+                    {
+                        id: 2,
+                        name: "MacBook Pro 16-inch",
+                        category: "laptops",
+                        brand: "Apple",
+                        price: 2499,
+                        originalPrice: 2699,
+                        rating: 4.9,
+                        reviews: 890,
+                        description: "Supercharged by M3 Max chip for unprecedented performance.",
+                        badge: "best-seller",
+                        emoji: "💻",
+                        createdAt: new Date('2024-01-10')
+                    },
+                    {
+                        id: 3,
+                        name: "AirPods Pro (2nd Gen)",
+                        category: "headphones",
+                        brand: "Apple",
+                        price: 249,
+                        originalPrice: 299,
+                        rating: 4.7,
+                        reviews: 2100,
+                        description: "Active Noise Cancellation and Adaptive Transparency.",
+                        badge: "sale",
+                        emoji: "🎧",
+                        createdAt: new Date('2023-12-20')
+                    },
+                    {
+                        id: 4,
+                        name: "iPad Pro 12.9-inch",
+                        category: "tablets",
+                        brand: "Apple",
+                        price: 1099,
+                        originalPrice: 1199,
+                        rating: 4.6,
+                        reviews: 750,
+                        description: "The ultimate iPad experience with M2 chip and Liquid Retina XDR display.",
+                        badge: "",
+                        emoji: "📲",
+                        createdAt: new Date('2023-11-15')
+                    },
+                    {
+                        id: 5,
+                        name: "Samsung Galaxy S24 Ultra",
+                        category: "smartphones",
+                        brand: "Samsung",
+                        price: 1299,
+                        originalPrice: 1399,
+                        rating: 4.5,
+                        reviews: 980,
+                        description: "AI-powered smartphone with S Pen and 200MP camera.",
+                        badge: "new",
+                        emoji: "📱",
+                        createdAt: new Date('2024-02-01')
+                    },
+                    {
+                        id: 6,
+                        name: "Dell XPS 13",
+                        category: "laptops",
+                        brand: "Dell",
+                        price: 999,
+                        originalPrice: 1199,
+                        rating: 4.4,
+                        reviews: 650,
+                        description: "Ultra-portable laptop with InfinityEdge display.",
+                        badge: "sale",
+                        emoji: "💻",
+                        createdAt: new Date('2023-10-30')
+                    },
+                    {
+                        id: 7,
+                        name: "Sony WH-1000XM5",
+                        category: "headphones",
+                        brand: "Sony",
+                        price: 399,
+                        originalPrice: 449,
+                        rating: 4.8,
+                        reviews: 1450,
+                        description: "Industry-leading noise canceling with premium sound quality.",
+                        badge: "best-seller",
+                        emoji: "🎧",
+                        createdAt: new Date('2023-12-05')
+                    },
+                    {
+                        id: 8,
+                        name: "Apple Watch Series 9",
+                        category: "smartwatch",
+                        brand: "Apple",
+                        price: 399,
+                        originalPrice: 429,
+                        rating: 4.7,
+                        reviews: 1100,
+                        description: "Advanced health features and carbon neutral design.",
+                        badge: "new",
+                        emoji: "⌚",
+                        createdAt: new Date('2024-01-20')
+                    },
+                    {
+                        id: 9,
+                        name: "Microsoft Surface Pro 9",
+                        category: "tablets",
+                        brand: "Microsoft",
+                        price: 1099,
+                        originalPrice: 1299,
+                        rating: 4.3,
+                        reviews: 420,
+                        description: "2-in-1 laptop tablet with Intel Evo platform.",
+                        badge: "sale",
+                        emoji: "📲",
+                        createdAt: new Date('2023-11-08')
+                    },
+                    {
+                        id: 10,
+                        name: "Magic Keyboard for iPad",
+                        category: "accessories",
+                        brand: "Apple",
+                        price: 349,
+                        originalPrice: 399,
+                        rating: 4.5,
+                        reviews: 680,
+                        description: "Floating cantilever design with backlit keys.",
+                        badge: "",
+                        emoji: "⌨️",
+                        createdAt: new Date('2023-09-15')
+                    },
+                    {
+                        id: 11,
+                        name: "Samsung Galaxy Buds2 Pro",
+                        category: "headphones",
+                        brand: "Samsung",
+                        price: 229,
+                        originalPrice: 279,
+                        rating: 4.4,
+                        reviews: 890,
+                        description: "Intelligent ANC with 360 Audio for immersive sound.",
+                        badge: "",
+                        emoji: "🎧",
+                        createdAt: new Date('2023-08-22')
+                    },
+                    {
+                        id: 12,
+                        name: "ASUS ROG Zephyrus G14",
+                        category: "laptops",
+                        brand: "ASUS",
+                        price: 1599,
+                        originalPrice: 1799,
+                        rating: 4.6,
+                        reviews: 540,
+                        description: "Gaming laptop with AMD Ryzen 9 and RTX 4070.",
+                        badge: "best-seller",
+                        emoji: "💻",
+                        createdAt: new Date('2023-12-12')
+                    }
+                ];
+            }
+
+            bindEvents() {
+                // Search input
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.filters.search = e.target.value.toLowerCase();
+                    this.applyFilters();
+                });
+
+                // Category filter
+                document.getElementById('categoryFilter').addEventListener('change', (e) => {
+                    this.filters.category = e.target.value;
+                    this.applyFilters();
+                });
+
+                // Sort dropdown
+                document.getElementById('sortBy').addEventListener('change', (e) => {
+                    this.filters.sortBy = e.target.value;
+                    this.applyFilters();
+                });
+
+                // Price range inputs
+                document.getElementById('minPrice').addEventListener('input', (e) => {
+                    this.filters.minPrice = e.target.value ? parseFloat(e.target.value) : null;
+                    this.applyFilters();
+                });
+
+                document.getElementById('maxPrice').addEventListener('input', (e) => {
+                    this.filters.maxPrice = e.target.value ? parseFloat(e.target.value) : null;
+                    this.applyFilters();
+                });
+
+                // View toggle
+                document.getElementById('gridViewBtn').addEventListener('click', () => {
+                    this.setView('grid');
+                });
+
+                document.getElementById('listViewBtn').addEventListener('click', () => {
+                    this.setView('list');
+                });
+            }
+
+            applyFilters() {
+                this.showLoading();
+                
+                // Simulate loading delay
+                setTimeout(() => {
+                    let filtered = [...this.products];
+
+                    // Apply search filter
+                    if (this.filters.search) {
+                        filtered = filtered.filter(product => 
+                            product.name.toLowerCase().includes(this.filters.search) ||
+                            product.category.toLowerCase().includes(this.filters.search) ||
+                            product.brand.toLowerCase().includes(this.filters.search) ||
+                            product.description.toLowerCase().includes(this.filters.search)
+                        );
+                    }
+
+                    // Apply category filter
+                    if (this.filters.category) {
+                        filtered = filtered.filter(product => product.category === this.filters.category);
+                    }
+
+                    // Apply price range filter
+                    if (this.filters.minPrice !== null) {
+                        filtered = filtered.filter(product => product.price >= this.filters.minPrice);
+                    }
+
+                    if (this.filters.maxPrice !== null) {
+                        filtered = filtered.filter(product => product.price <= this.filters.maxPrice);
+                    }
+
+                    // Apply sorting
+                    this.sortProducts(filtered);
+
+                    this.filteredProducts = filtered;
+                    this.updateActiveFilters();
+                    this.renderProducts();
+                    this.updateResultsCount();
+                }, 300);
+            }
+
+            sortProducts(products) {
+                switch (this.filters.sortBy) {
+                    case 'name':
+                        products.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                    case 'name-desc':
+                        products.sort((a, b) => b.name.localeCompare(a.name));
+                        break;
+                    case 'price-low':
+                        products.sort((a, b) => a.price - b.price);
+                        break;
+                    case 'price-high':
+                        products.sort((a, b) => b.price - a.price);
+                        break;
+                    case 'rating':
+                        products.sort((a, b) => b.rating - a.rating);
+                        break;
+                    case 'newest':
+                        products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                        break;
+                }
+            }
+
+            updateActiveFilters() {
+                const activeFiltersContainer = document.getElementById('activeFilters');
+                activeFiltersContainer.innerHTML = '';
+
+                const filters = [];
+
+                if (this.filters.search) {
+                    filters.push({ type: 'search', label: `Search: "${this.filters.search}"`, value: this.filters.search });
+                }
+
+                if (this.filters.category) {
+                    const categoryLabel = document.querySelector(`#categoryFilter option[value="${this.filters.category}"]`).textContent;
+                    filters.push({ type: 'category', label: `Category: ${categoryLabel}`, value: this.filters.category });
+                }
+
+                if (this.filters.minPrice !== null || this.filters.maxPrice !== null) {
+                    const min = this.filters.minPrice || 0;
+                    const max = this.filters.maxPrice || '∞';
+                    filters.push({ type: 'price', label: `Price: ${min} - ${max}`, value: 'price' });
+                }
+
+                filters.forEach(filter => {
+                    const filterTag = document.createElement('div');
+                    filterTag.className = 'filter-tag';
+                    filterTag.innerHTML = `
+                        ${filter.label}
+                        <button class="remove-filter" onclick="catalog.removeFilter('${filter.type}', '${filter.value}')">×</button>
+                    `;
+                    activeFiltersContainer.appendChild(filterTag);
+                });
+            }
+
+            removeFilter(type, value) {
+                switch (type) {
+                    case 'search':
+                        this.filters.search = '';
+                        document.getElementById('searchInput').value = '';
+                        break;
+                    case 'category':
+                        this.filters.category = '';
+                        document.getElementById('categoryFilter').value = '';
+                        break;
+                    case 'price':
+                        this.filters.minPrice = null;
+                        this.filters.maxPrice = null;
+                        document.getElementById('minPrice').value = '';
+                        document.getElementById('maxPrice').value = '';
+                        break;
+                }
+                this.applyFilters();
+            }
+
+            setView(view) {
+                this.currentView = view;
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(view + 'ViewBtn').classList.add('active');
+                
+                const grid = document.getElementById('productsGrid');
+                if (view === 'list') {
+                    grid.classList.add('list-view');
+                } else {
+                    grid.classList.remove('list-view');
+                }
+                this.renderProducts();
+            }
+
+            showLoading() {
+                const grid = document.getElementById('productsGrid');
+                grid.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading products...</p>
+                    </div>
+                `;
+            }
+
+            renderProducts() {
+                const grid = document.getElementById('productsGrid');
+
+                if (this.filteredProducts.length === 0) {
+                    grid.innerHTML = `
+                        <div class="no-results">
+                            <h3>🔍 No products found</h3>
+                            <p>Try adjusting your filters or search terms</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = this.filteredProducts.map(product => {
+                    const discount = product.originalPrice > product.price ? 
+                        Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+                    
+                    const stars = '★'.repeat(Math.floor(product.rating)) + 
+                                 (product.rating % 1 >= 0.5 ? '☆' : '') + 
+                                 '☆'.repeat(Math.floor(5 - product.rating));
+
+                    return `
+                        <div class="product-card ${this.currentView === 'list' ? 'list-view' : ''}">
+                            <div class="product-image">
+                                ${product.emoji}
+                                ${product.badge ? `<div class="product-badge ${product.badge}">${product.badge.replace('-', ' ')}</div>` : ''}
+                            </div>
+                            <div class="product-info">
+                                <div>
+                                    <div class="product-category">${product.category}</div>
+                                    <h3 class="product-title">${product.name}</h3>
+                                    <p class="product-description">${product.description}</p>
+                                    <div class="product-rating">
+                                        <span class="stars">${stars}</span>
+                                        <span class="rating-text">${product.rating} (${product.reviews} reviews)</span>
+                                    </div>
+                                </div>
+                                <div class="product-price">
+                                    <div>
+                                        <span class="current-price">${product.price}</span>
+                                        ${product.originalPrice > product.price ? `<span class="original-price">${product.originalPrice}</span>` : ''}
+                                    </div>
+                                    ${discount > 0 ? `<span class="discount">${discount}% OFF</span>` : ''}
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-primary" onclick="catalog.addToCart(${product.id})">🛒 Add to Cart</button>
+                                    <button class="btn btn-secondary" onclick="catalog.addToWishlist(${product.id})">💖 Wishlist</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateResultsCount() {
+                const count = this.filteredProducts.length;
+                const total = this.products.length;
+                document.getElementById('resultsCount').textContent = 
+                    `Showing ${count} of ${total} products`;
+            }
+
+            addToCart(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (product) {
+                    // Simulate add to cart
+                    this.showNotification(`✅ ${product.name} added to cart!`, 'success');
+                }
+            }
+
+            addToWishlist(productId) {
+                const product = this.products.find(p => p.id === productId);
+                if (product) {
+                    // Simulate add to wishlist
+                    this.showNotification(`💖 ${product.name} added to wishlist!`, 'info');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#28a745' : '#17a2b8'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Add CSS for notification animations
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+
+        // Initialize the catalog
+        const catalog = new ProductCatalog();
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + F to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // Escape to clear search
+            if (e.key === 'Escape') {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput.value) {
+                    searchInput.value = '';
+                    catalog.filters.search = '';
+                    catalog.applyFilters();
+                }
+            }
+        });
+
+        // Add smooth scroll to top functionality
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                if (!document.getElementById('scrollTopBtn')) {
+                    const scrollBtn = document.createElement('button');
+                    scrollBtn.id = 'scrollTopBtn';
+                    scrollBtn.innerHTML = '↑';
+                    scrollBtn.style.cssText = `
+                        position: fixed;
+                        bottom: 30px;
+                        right: 30px;
+                        width: 50px;
+                        height: 50px;
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        font-size: 1.2rem;
+                        cursor: pointer;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        z-index: 1000;
+                        transition: all 0.3s ease;
+                    `;
+                    scrollBtn.addEventListener('click', () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                    document.body.appendChild(scrollBtn);
+                }
+            } else {
+                const scrollBtn = document.getElementById('scrollTopBtn');
+                if (scrollBtn) {
+                    scrollBtn.remove();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
